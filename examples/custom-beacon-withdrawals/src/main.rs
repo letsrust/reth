@@ -129,9 +129,8 @@ where
     fn evm_env_for_block(
         &self,
         header: &alloy_consensus::Header,
-        total_difficulty: U256,
     ) -> EnvWithHandlerCfg {
-        let (cfg, block_env) = self.evm_config.cfg_and_block_env(header, total_difficulty);
+        let (cfg, block_env) = self.evm_config.cfg_and_block_env(header);
         EnvWithHandlerCfg::new_with_cfg_env(cfg, block_env, Default::default())
     }
 }
@@ -147,7 +146,6 @@ where
     fn apply_pre_execution_changes(
         &mut self,
         block: &BlockWithSenders,
-        _total_difficulty: U256,
     ) -> Result<(), Self::Error> {
         // Set state clear flag if the block is after the Spurious Dragon hardfork.
         let state_clear_flag =
@@ -160,7 +158,6 @@ where
     fn execute_transactions(
         &mut self,
         _block: &BlockWithSenders,
-        _total_difficulty: U256,
     ) -> Result<ExecuteOutput<Receipt>, Self::Error> {
         Ok(ExecuteOutput { receipts: vec![], gas_used: 0 })
     }
@@ -168,10 +165,9 @@ where
     fn apply_post_execution_changes(
         &mut self,
         block: &BlockWithSenders,
-        total_difficulty: U256,
         _receipts: &[Receipt],
     ) -> Result<Requests, Self::Error> {
-        let env = self.evm_env_for_block(&block.header, total_difficulty);
+        let env = self.evm_env_for_block(&block.header);
         let mut evm = self.evm_config.evm_with_env(&mut self.state, env);
 
         if let Some(withdrawals) = block.body.withdrawals.as_ref() {

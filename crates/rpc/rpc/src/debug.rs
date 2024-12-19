@@ -629,7 +629,7 @@ where
 
                 let _ = block_executor
                     .execute_with_state_closure(
-                        (&(*block).clone().unseal(), block.difficulty()).into(),
+                        &(*block).clone().unseal(),
                         |statedb: &State<_>| {
                             witness_record.record_executed_state(statedb);
                         },

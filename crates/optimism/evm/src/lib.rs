@@ -113,7 +113,6 @@ impl ConfigureEvmEnv for OpEvmConfig {
         &self,
         cfg_env: &mut CfgEnvWithHandlerCfg,
         header: &Self::Header,
-        total_difficulty: U256,
     ) {
         let spec_id = revm_spec(
             self.chain_spec(),
@@ -121,7 +120,9 @@ impl ConfigureEvmEnv for OpEvmConfig {
                 number: header.number,
                 timestamp: header.timestamp,
                 difficulty: header.difficulty,
-                total_difficulty,
+                // NOTE: this does not matter within revm_spec as it uses paris hardfork block
+                // activation
+                total_difficulty: U256::MIN,
                 hash: Default::default(),
             },
         );
@@ -245,13 +246,10 @@ mod tests {
             .shanghai_activated()
             .build();
 
-        // Define the total difficulty as zero (default)
-        let total_difficulty = U256::ZERO;
-
         // Use the `OpEvmConfig` to create the `cfg_env` and `block_env` based on the ChainSpec,
         // Header, and total difficulty
         let (cfg_env, _) = OpEvmConfig::new(Arc::new(OpChainSpec { inner: chain_spec.clone() }))
-            .cfg_and_block_env(&header, total_difficulty);
+            .cfg_and_block_env(&header);
 
         // Assert that the chain ID in the `cfg_env` is correctly set to the chain ID of the
         // ChainSpec

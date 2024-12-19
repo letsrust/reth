@@ -141,9 +141,9 @@ pub trait ConfigureEvmEnv: Send + Sync + Unpin + Clone + 'static {
     );
 
     /// Returns a [`CfgEnvWithHandlerCfg`] for the given header.
-    fn cfg_env(&self, header: &Self::Header, total_difficulty: U256) -> CfgEnvWithHandlerCfg {
+    fn cfg_env(&self, header: &Self::Header) -> CfgEnvWithHandlerCfg {
         let mut cfg = CfgEnvWithHandlerCfg::new(Default::default(), Default::default());
-        self.fill_cfg_env(&mut cfg, header, total_difficulty);
+        self.fill_cfg_env(&mut cfg, header);
         cfg
     }
 
@@ -155,7 +155,6 @@ pub trait ConfigureEvmEnv: Send + Sync + Unpin + Clone + 'static {
         &self,
         cfg_env: &mut CfgEnvWithHandlerCfg,
         header: &Self::Header,
-        total_difficulty: U256,
     );
 
     /// Fill [`BlockEnv`] field according to the chain spec and given header
@@ -183,11 +182,10 @@ pub trait ConfigureEvmEnv: Send + Sync + Unpin + Clone + 'static {
     fn cfg_and_block_env(
         &self,
         header: &Self::Header,
-        total_difficulty: U256,
     ) -> (CfgEnvWithHandlerCfg, BlockEnv) {
         let mut cfg = CfgEnvWithHandlerCfg::new(Default::default(), Default::default());
         let mut block_env = BlockEnv::default();
-        self.fill_cfg_and_block_env(&mut cfg, &mut block_env, header, total_difficulty);
+        self.fill_cfg_and_block_env(&mut cfg, &mut block_env, header);
         (cfg, block_env)
     }
 
@@ -200,9 +198,8 @@ pub trait ConfigureEvmEnv: Send + Sync + Unpin + Clone + 'static {
         cfg: &mut CfgEnvWithHandlerCfg,
         block_env: &mut BlockEnv,
         header: &Self::Header,
-        total_difficulty: U256,
     ) {
-        self.fill_cfg_env(cfg, header, total_difficulty);
+        self.fill_cfg_env(cfg, header);
         let after_merge = cfg.handler_cfg.spec_id >= SpecId::MERGE;
         self.fill_block_env(block_env, header, after_merge);
     }

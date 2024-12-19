@@ -298,7 +298,7 @@ where
         .build();
 
     // Configure environments
-    let (cfg, block_env) = evm_config.cfg_and_block_env(&reorg_target.header, U256::MAX);
+    let (cfg, block_env) = evm_config.cfg_and_block_env(&reorg_target.header);
     let env = EnvWithHandlerCfg::new_with_cfg_env(cfg, block_env, Default::default());
     let mut evm = evm_config.evm_with_env(&mut state, env);
 

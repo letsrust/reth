@@ -21,7 +21,7 @@ use reth_evm::execute::{BlockExecutorProvider, Executor};
 use reth_primitives::{GotExpected, NodePrimitives, SealedBlockWithSenders, SealedHeader};
 use reth_primitives_traits::{Block as _, BlockBody};
 use reth_provider::{
-    BlockExecutionInput, BlockExecutionOutput, BlockReaderIdExt, StateProviderFactory,
+    BlockExecutionOutput, BlockReaderIdExt, StateProviderFactory,
 };
 use reth_revm::{cached::CachedReads, database::StateProviderDatabase};
 use reth_rpc_api::BlockSubmissionValidationApiServer;
@@ -154,7 +154,7 @@ where
         let block = block.unseal();
         let mut accessed_blacklisted = None;
         let output = executor.execute_with_state_closure(
-            BlockExecutionInput::new(&block, U256::MAX),
+            &block,
             |state| {
                 if !self.disallow.is_empty() {
                     for account in state.cache.accounts.keys() {

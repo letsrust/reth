@@ -60,9 +60,9 @@ impl ForkCondition {
     /// `58_750_000_000_000_000_000_000`)
     ///
     /// This will return false for any condition that is not TTD-based.
-    pub fn active_at_ttd(&self, block_number: BlockNumber) -> bool {
-        matches!(self, Self::TTD { activation_block_number, .. }
-            if block_number >= *activation_block_number)
+    pub fn active_at_ttd(&self, ttd: U256, difficulty: U256) -> bool {
+        matches!(self, Self::TTD { total_difficulty, .. }
+            if ttd.saturating_sub(difficulty) >= *total_difficulty)
     }
 
     /// Checks whether the fork condition is satisfied at the given timestamp.
@@ -89,7 +89,7 @@ impl ForkCondition {
     pub fn active_at_head(&self, head: &Head) -> bool {
         self.active_at_block(head.number) ||
             self.active_at_timestamp(head.timestamp) ||
-            self.active_at_ttd(head.number)
+            self.active_at_ttd(head.total_difficulty, head.difficulty)
     }
 
     /// Get the total terminal difficulty for this fork condition.
@@ -171,19 +171,19 @@ mod tests {
         let fork_condition =
             ForkCondition::TTD { activation_block_number: 10, fork_block: Some(10), total_difficulty: U256::from(1000) };
         assert!(
-            fork_condition.active_at_ttd(10),
+            fork_condition.active_at_ttd(U256::from(1000000), U256::from(100)),
             "The TTD condition should be active when the total difficulty matches"
         );
 
         // Test if the condition does not activate when the total difficulty is lower
         assert!(
-            !fork_condition.active_at_ttd(9),
+            !fork_condition.active_at_ttd(U256::from(900), U256::from(100)),
             "The TTD condition should not be active when the total difficulty is lower"
         );
 
         // Test with a saturated subtraction
         assert!(
-            !fork_condition.active_at_ttd(9),
+            !fork_condition.active_at_ttd(U256::from(900), U256::from(1000)),
             "The TTD condition should not be active when the subtraction saturates"
         );
     }

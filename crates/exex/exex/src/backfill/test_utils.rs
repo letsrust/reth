@@ -6,7 +6,7 @@ use alloy_primitives::{b256, Address, TxKind, U256};
 use eyre::OptionExt;
 use reth_chainspec::{ChainSpec, ChainSpecBuilder, EthereumHardfork, MAINNET, MIN_TRANSACTION_GAS};
 use reth_evm::execute::{
-    BatchExecutor, BlockExecutionInput, BlockExecutionOutput, BlockExecutorProvider, Executor,
+    BatchExecutor, BlockExecutionOutput, BlockExecutorProvider, Executor,
 };
 use reth_evm_ethereum::execute::EthExecutorProvider;
 use reth_node_api::FullNodePrimitives;
@@ -71,7 +71,7 @@ where
     // Execute the block to produce a block execution output
     let mut block_execution_output = EthExecutorProvider::ethereum(chain_spec)
         .executor(StateProviderDatabase::new(LatestStateProviderRef::new(&provider)))
-        .execute(BlockExecutionInput { block, total_difficulty: U256::ZERO })?;
+        .execute(block)?;
     block_execution_output.state.reverts.sort();
 
     // Convert the block execution output to an execution outcome for committing to the database
@@ -207,8 +207,8 @@ where
         .batch_executor(StateProviderDatabase::new(LatestStateProviderRef::new(&provider)));
 
     let mut execution_outcome = executor.execute_and_verify_batch(vec![
-        (&block1, U256::ZERO).into(),
-        (&block2, U256::ZERO).into(),
+        &block1,
+        &block2,
     ])?;
     execution_outcome.state_mut().reverts.sort();
 

@@ -2458,7 +2458,7 @@ mod tests {
                     .chain(MAINNET.chain)
                     .genesis(MAINNET.genesis.clone())
                     .london_activated()
-                    .paris_at_ttd( U256::from(3), EthereumHardfork::London.activation_block(MAINNET.chain).unwrap())
+                    .paris_at_ttd(U256::from(3), 1)
                     .build(),
             );
 

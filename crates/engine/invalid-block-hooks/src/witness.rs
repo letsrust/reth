@@ -77,7 +77,7 @@ where
             .build();
 
         // Setup environment for the execution.
-        let (cfg, block_env) = self.evm_config.cfg_and_block_env(block.header(), U256::MAX);
+        let (cfg, block_env) = self.evm_config.cfg_and_block_env(block.header());
 
         // Setup EVM
         let mut evm = self.evm_config.evm_with_env(
@@ -110,7 +110,6 @@ where
         let balance_increments = post_block_balance_increments(
             self.provider.chain_spec().as_ref(),
             &block.clone().unseal().block,
-            U256::MAX,
         );
 
         // increment balances

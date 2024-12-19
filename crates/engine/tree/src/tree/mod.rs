@@ -2229,7 +2229,7 @@ where
         let noop_state_hook = |_state: &EvmState| {};
         let output = self.metrics.executor.execute_metered(
             executor,
-            (&block, U256::MAX).into(),
+            &block,
             Box::new(noop_state_hook),
         )?;
 
